@@ -7,8 +7,14 @@ const { API, API_SECRET } = require('./config')
 const app = express()
 
 try {
-  // const FETCH_FREQUENCIES = ['ONCEWEEKLY', 'TWICEWEEKLY', 'BIWEEKLY', 'ONCEMONTHLY', 'ONCEDAILY']
-  const FETCH_FREQUENCIES = ['EVERYMINUTE']
+  const FETCH_FREQUENCIES = [
+    'ONCEWEEKLY',
+    'TWICEWEEKLY',
+    'BIWEEKLY',
+    'ONCEMONTHLY',
+    'ONCEDAILY'
+  ]
+  // const FETCH_FREQUENCIES = ['EVERYMINUTE']
 
   const convertFrequency = frequency => {
     const rule = new scheduler.RecurrenceRule()
