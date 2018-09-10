@@ -12,6 +12,7 @@ try {
     'TWICEWEEKLY',
     'BIWEEKLY',
     'ONCEMONTHLY',
+    'SPECIALMONTHLY',
     'ONCEDAILY'
   ]
   // const FETCH_FREQUENCIES = ['EVERYMINUTE']
@@ -33,6 +34,9 @@ try {
         break
       case 'ONCEMONTHLY':
         rule.date = 1
+        break
+      case 'SPECIALMONTHLY':
+        rule.date = 15
         break
       case 'ONCEDAILY':
         break
@@ -56,9 +60,17 @@ try {
     const frequency = convertFrequency(frequencyWord)
     scheduler.scheduleJob(frequency, async () => {
       console.log(`Scheduler running for frequency ${frequencyWord}`)
+
+      let command = 'worker-send-boost-notification'
+      let commandBody = { secret: API_SECRET }
+      if (frequencyWord !== 'SPECIALMONTHLY') {
+        command = 'worker-run-frequency'
+        commandBody.data = { frequencyWord }
+      }
+
       await request.post({
-        uri: `${API}/admin/worker-run-frequency`,
-        body: { secret: API_SECRET, data: { frequencyWord } },
+        uri: `${API}/admin/${command}`,
+        body: commandBody,
         json: true
       })
     })
