@@ -37,6 +37,7 @@ try {
         break
       case 'SPECIALMONTHLY':
         rule.date = 15
+        rule.hour = 16
         break
       case 'ONCEDAILY':
         break
