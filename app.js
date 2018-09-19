@@ -8,12 +8,15 @@ const app = express()
 
 try {
   const FETCH_FREQUENCIES = [
+    // Money pulling
     'ONCEWEEKLY',
     'TWICEWEEKLY',
     'BIWEEKLY',
     'ONCEMONTHLY',
-    'SPECIALMONTHLY',
-    'ONCEDAILY'
+    'ONCEDAILY',
+    // Other tasks
+    'ASK_ALGO_BOOST',
+    'FIRE_NOTIFICATIONS'
   ]
   // const FETCH_FREQUENCIES = ['EVERYMINUTE']
 
@@ -35,10 +38,6 @@ try {
       case 'ONCEMONTHLY':
         rule.date = 1
         break
-      case 'SPECIALMONTHLY':
-        rule.date = 15
-        rule.hour = 16
-        break
       case 'ONCEDAILY':
         break
       case 'EVERYHOUR':
@@ -47,6 +46,13 @@ try {
       case 'EVERYMINUTE':
         rule.hour = null
         rule.minute = new scheduler.Range(0, 59, 1)
+        break
+      case 'ASK_ALGO_BOOST':
+        rule.date = 15
+        rule.hour = 16
+        break
+      case 'FIRE_NOTIFICATIONS':
+        rule.hour = 15
         break
       default:
         // ONCEWEEKLY
@@ -64,7 +70,10 @@ try {
 
       let command = 'worker-send-boost-notification'
       let commandBody = { secret: API_SECRET }
-      if (frequencyWord !== 'SPECIALMONTHLY') {
+
+      if (frequencyWord === 'FIRE_NOTIFICATIONS') {
+        command = 'notifications-fire'
+      } else if (frequencyWord !== 'ASK_ALGO_BOOST') {
         command = 'worker-run-frequency'
         commandBody.data = { frequencyWord }
       }
