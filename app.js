@@ -66,7 +66,10 @@ try {
   FETCH_FREQUENCIES.map(async frequencyWord => {
     const frequency = convertFrequency(frequencyWord)
     scheduler.scheduleJob(frequency, async () => {
-      console.log(`Scheduler running for frequency ${frequencyWord} at ${Date.now()}`)
+      const now = new Date(Date.now())
+      console.log(
+        `Scheduler running for frequency ${frequencyWord} at ${now.toString()}`
+      )
 
       let command = 'worker-send-boost-notification'
       let commandBody = { secret: API_SECRET }
