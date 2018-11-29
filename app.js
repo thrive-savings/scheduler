@@ -23,7 +23,7 @@ try {
   const convertFrequency = frequency => {
     const rule = new scheduler.RecurrenceRule()
     rule.tz = 'UTC'
-    rule.hour = 10
+    rule.hour = 14
     rule.minute = 0
     switch (frequency) {
       case 'ONCEWEEKLY':
