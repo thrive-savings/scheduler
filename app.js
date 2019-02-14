@@ -16,9 +16,10 @@ try {
     'ONCEDAILY',
     // Other tasks
     'ASK_ALGO_BOOST',
-    'FIRE_NOTIFICATIONS'
+    'FIRE_NOTIFICATIONS',
+    'FETCH_DAILY_UPDATES',
+    'MONTHLY_STATEMENT'
   ]
-  // const FETCH_FREQUENCIES = ['EVERYMINUTE']
 
   const convertFrequency = frequency => {
     const rule = new scheduler.RecurrenceRule()
@@ -54,6 +55,13 @@ try {
       case 'FIRE_NOTIFICATIONS':
         rule.hour = 15
         break
+      case 'FETCH_DAILY_UPDATES':
+        rule.hour = 10
+        break
+      case 'MONTHLY_STATEMENT':
+        rule.date = 1
+        rule.hour = 16
+        break
       default:
         // ONCEWEEKLY
         rule.dayOfWeek = 1
@@ -62,30 +70,38 @@ try {
     return rule
   }
 
+  const fire = async frequencyWord => {
+    const now = new Date(Date.now())
+    console.log(
+      `Scheduler running for frequency ${frequencyWord} at ${now.toString()}`
+    )
+
+    let command = 'worker-send-boost-notification'
+    let commandBody = { secret: API_SECRET }
+
+    if (frequencyWord === 'FIRE_NOTIFICATIONS') {
+      command = 'notifications-fire'
+    } else if (frequencyWord === 'FETCH_DAILY_UPDATES') {
+      command = 'worker-fetch-daily-updates'
+    } else if (frequencyWord === 'MONTHLY_STATEMENT') {
+      command = 'worker-monthly-statement'
+    } else if (frequencyWord !== 'ASK_ALGO_BOOST') {
+      command = 'worker-run-frequency'
+      commandBody.data = { frequencyWord }
+    }
+
+    await request.post({
+      uri: `${API}/admin/${command}`,
+      body: commandBody,
+      json: true
+    })
+  }
+
   // Schedule jobs
   FETCH_FREQUENCIES.map(async frequencyWord => {
     const frequency = convertFrequency(frequencyWord)
     scheduler.scheduleJob(frequency, async () => {
-      const now = new Date(Date.now())
-      console.log(
-        `Scheduler running for frequency ${frequencyWord} at ${now.toString()}`
-      )
-
-      let command = 'worker-send-boost-notification'
-      let commandBody = { secret: API_SECRET }
-
-      if (frequencyWord === 'FIRE_NOTIFICATIONS') {
-        command = 'notifications-fire'
-      } else if (frequencyWord !== 'ASK_ALGO_BOOST') {
-        command = 'worker-run-frequency'
-        commandBody.data = { frequencyWord }
-      }
-
-      await request.post({
-        uri: `${API}/admin/${command}`,
-        body: commandBody,
-        json: true
-      })
+      await fire(frequencyWord)
     })
   })
 } catch (error) {
