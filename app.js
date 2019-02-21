@@ -76,8 +76,10 @@ try {
       `Scheduler running for frequency ${frequencyWord} at ${now.toString()}`
     )
 
+    const apiSecret = { secret: API_SECRET }
+
     let command = 'worker-send-boost-notification'
-    let commandBody = { secret: API_SECRET }
+    let commandBody = { ...apiSecret }
 
     if (frequencyWord === 'FIRE_NOTIFICATIONS') {
       command = 'notifications-fire'
@@ -93,6 +95,12 @@ try {
     await request.post({
       uri: `${API}/admin/${command}`,
       body: commandBody,
+      json: true
+    })
+
+    request.post({
+      uri: `${API}/admin/worker-notify-about-scheduler-run`,
+      body: { ...apiSecret, data: { task: command } },
       json: true
     })
   }
