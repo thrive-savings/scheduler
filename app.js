@@ -23,6 +23,9 @@ try {
     },
     MONTHLY_STATEMENT: {
       endpoint: 'notifications-monthly-statement'
+    },
+    DAILY_OKR: {
+      endpoint: 'manual-echo-okr'
     }
   }
 
@@ -49,6 +52,10 @@ try {
       case 'MONTHLY_STATEMENT':
         rule.date = 1
         rule.hour = 16
+        break
+      case 'DAILY_OKR':
+        rule.hour = 13
+        rule.minute = 0
         break
     }
     return rule
