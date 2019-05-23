@@ -26,6 +26,9 @@ try {
     },
     DAILY_OKR: {
       endpoint: 'manual-echo-okr'
+    },
+    MOMENTUM_BONUS: {
+      endpoint: 'momentum-bonus'
     }
   }
 
@@ -55,7 +58,9 @@ try {
         break
       case 'DAILY_OKR':
         rule.hour = 13
-        rule.minute = 0
+        break
+      case 'MOMENTUM_BONUS':
+        rule.hour = 16
         break
     }
     return rule
